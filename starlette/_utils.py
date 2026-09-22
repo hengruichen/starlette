@@ -12,13 +12,6 @@ if sys.version_info >= (3, 10):  # pragma: no cover
 else:  # pragma: no cover
     from typing_extensions import TypeGuard
 
-has_exceptiongroups = True
-if sys.version_info < (3, 11):  # pragma: no cover
-    try:
-        from exceptiongroup import BaseExceptionGroup
-    except ImportError:
-        has_exceptiongroups = False
-
 T = typing.TypeVar("T")
 AwaitableCallable = typing.Callable[..., typing.Awaitable[T]]
 
@@ -84,10 +77,9 @@ def collapse_excgroups() -> typing.Generator[None, None, None]:
     try:
         yield
     except BaseException as exc:
-        if has_exceptiongroups:
-            while isinstance(exc, BaseExceptionGroup) and len(exc.exceptions) == 1:
-                exc = exc.exceptions[0]  # pragma: no cover
-
+        if hasattr(exc, "exceptions") and isinstance(exc.exceptions, list):
+            if len(exc.exceptions) == 1:
+                raise exc.exceptions[0]
         raise exc
 
 
@@ -95,3 +87,4 @@ def get_route_path(scope: Scope) -> str:
     root_path = scope.get("root_path", "")
     route_path = re.sub(r"^" + root_path, "", scope["path"])
     return route_path
+
