@@ -85,74 +85,9 @@ class Starlette:
             if key in (500, Exception):
                 error_handler = value
             else:
-                exception_handlers[key] = value
-
-        middleware = (
-            [Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)]
-            + self.user_middleware
-            + [
-                Middleware(
-                    ExceptionMiddleware, handlers=exception_handlers, debug=debug
-                )
-            ]
-        )
-
-        app = self.router
-        for cls, options in reversed(middleware):
-            app = cls(app=app, **options)
-        return app
-
-    @property
-    def routes(self) -> typing.List[BaseRoute]:
-        return self.router.routes
-
-    def url_path_for(self, name: str, /, **path_params: typing.Any) -> URLPath:
-        return self.router.url_path_for(name, **path_params)
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        scope["app"] = self
-        if self.middleware_stack is None:
-            self.middleware_stack = self.build_middleware_stack()
-        await self.middleware_stack(scope, receive, send)
-
-    def on_event(self, event_type: str) -> typing.Callable:  # type: ignore[type-arg]
-        return self.router.on_event(event_type)  # pragma: nocover
-
-    def mount(self, path: str, app: ASGIApp, name: str | None = None) -> None:
-        self.router.mount(path, app=app, name=name)  # pragma: no cover
-
-    def host(self, host: str, app: ASGIApp, name: str | None = None) -> None:
-        self.router.host(host, app=app, name=name)  # pragma: no cover
-
-    def add_middleware(self, middleware_class: type, **options: typing.Any) -> None:
-        if self.middleware_stack is not None:  # pragma: no cover
-            raise RuntimeError("Cannot add middleware after an application has started")
-        self.user_middleware.insert(0, Middleware(middleware_class, **options))
-
-    def add_exception_handler(
-        self,
-        exc_class_or_status_code: int | typing.Type[Exception],
-        handler: ExceptionHandler,
-    ) -> None:  # pragma: no cover
-        self.exception_handlers[exc_class_or_status_code] = handler
-
-    def add_event_handler(
-        self,
-        event_type: str,
-        func: typing.Callable,  # type: ignore[type-arg]
-    ) -> None:  # pragma: no cover
-        self.router.add_event_handler(event_type, func)
-
-    def add_route(
-        self,
-        path: str,
-        route: typing.Callable[[Request], typing.Awaitable[Response] | Response],
-        methods: typing.Optional[typing.List[str]] = None,
-        name: typing.Optional[str] = None,
-        include_in_schema: bool = True,
-    ) -> None:  # pragma: no cover
-        self.router.add_route(
-            path, route, methods=methods, name=name, include_in_schema=include_in_schema
+                exception_ha
+# ... [truncated] ...
+clude_in_schema=include_in_schema
         )
 
     def add_websocket_route(
@@ -252,3 +187,4 @@ class Starlette:
             return func
 
         return decorator
+
