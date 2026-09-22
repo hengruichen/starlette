@@ -58,3 +58,4 @@ def __getattr__(name: str) -> typing.Any:  # pragma: no cover
 
 def __dir__() -> list[str]:
     return sorted(list(__all__) + [__deprecated__])  # pragma: no cover
+
