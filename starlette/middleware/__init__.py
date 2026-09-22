@@ -15,3 +15,4 @@ class Middleware:
         option_strings = [f"{key}={value!r}" for key, value in self.options.items()]
         args_repr = ", ".join([self.cls.__name__] + option_strings)
         return f"{class_name}({args_repr})"
+
